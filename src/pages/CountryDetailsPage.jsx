@@ -1,21 +1,38 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
 function CountryDetailsPage({ className }) {
-  const { countryId } = useParams();
-  
+  const { alpha3Code } = useParams();
+  const [country, setCountry] = useState(null);
+  useEffect(() => {
+    axios
+      .get(`https://ih-countries-api.herokuapp.com/countries/${alpha3Code}`)
+      .then((response) => {
+        setCountry(response.data);
+        console.log(response.data);
+        console.log(country);
+      });
+    return () => {};
+  }, [alpha3Code]);
+  if (!country) {
+    // Mientras los datos se cargan, muestra un indicador de carga
+    return <p>Loading...</p>;
+  }
   return (
     <div className="container">
-      <p style={{ fontSize: "24px", fontWeight: "bold" }}>Country Details</p>
+      <p style={{ fontSize: "24px", fontWeight: "bold" }}>
+        Country Details Pages
+      </p>
 
-      <h1>France</h1>
+      <h1>{country.name.common}</h1>
 
       <table className="table">
         <thead></thead>
         <tbody>
           <tr>
             <td style={{ width: "30%" }}>Capital</td>
-            <td>Paris</td>
+            <td></td>
           </tr>
           <tr>
             <td>Area</td>
@@ -28,30 +45,15 @@ function CountryDetailsPage({ className }) {
             <td>Borders</td>
             <td>
               <ul>
-                <li>
-                  <a href="/AND">Andorra</a>
-                </li>
-                <li>
-                  <a href="/BEL">Belgium</a>
-                </li>
-                <li>
-                  <a href="/DEU">Germany</a>
-                </li>
-                <li>
-                  <a href="/ITA">Italy</a>
-                </li>
-                <li>
-                  <a href="/LUX">Luxembourg</a>
-                </li>
-                <li>
-                  <a href="/MCO">Monaco</a>
-                </li>
-                <li>
-                  <a href="/ESP">Spain</a>
-                </li>
-                <li>
-                  <a href="/CHE">Switzerland</a>
-                </li>
+                {country.borders?.length > 0 ? (
+                  country.borders.map((border) => (
+                    <li key={border}>
+                      <Link to={`/${border}`}>{border} </Link>
+                    </li>
+                  ))
+                ) : (
+                  <li>No borders available</li>
+                )}
               </ul>
             </td>
           </tr>

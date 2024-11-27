@@ -45,7 +45,6 @@ function HomePage({ className }) {
             </Link>
           );
         })}
-       
       </div>
     </div>
   );
